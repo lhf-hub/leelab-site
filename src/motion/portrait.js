@@ -166,6 +166,10 @@ export function initPortrait({ mount, reduced }) {
     return holder
   }
 
+  function renderOnce() {
+    if (reduced) renderer.render(scene, camera)
+  }
+
   function place() {
     if (!model) return
     const width = renderer.domElement.clientWidth || 1
@@ -246,6 +250,7 @@ export function initPortrait({ mount, reduced }) {
       model = fit(scene3d)
       pivot.add(model)
       place()
+      renderOnce()
       mount.classList.add('is-ready')
     },
     undefined,
@@ -254,6 +259,7 @@ export function initPortrait({ mount, reduced }) {
       model = fit(standIn())
       pivot.add(model)
       place()
+      renderOnce()
       mount.classList.add('is-ready')
       mount.classList.add('is-standin')
     },
