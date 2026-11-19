@@ -1,0 +1,99 @@
+:root {
+  color-scheme: light;
+
+  /* Warm palette */
+  --bg: #faf7f2;
+  --bg-soft: #f5eee4;
+  --surface: #fffcf7;
+  --surface-raised: #ffffff;
+  --ink: #2d2a26;
+  --ink-strong: #1f1b17;
+  --muted: #665c52;
+  --subtle: #8a8074;
+  --border: #e6ddd0;
+  --border-strong: #d6c9b8;
+
+  --coral: #e07a5f;
+  --coral-strong: #b4533c;
+  --coral-soft: #fbede6;
+  --green: #047857;
+  --green-strong: #17694f;
+  --green-soft: #e7f6f0;
+  --amber: #f4a261;
+  --amber-strong: #a45a0b;
+  --amber-soft: #fdf1e4;
+  --blue: #5b8db8;
+  --blue-strong: #3b6e8f;
+  --blue-soft: #eaf2f8;
+  --teal: #2a9d8f;
+  --teal-soft: #e6f3f1;
+
+  --footer-bg: #1f1b17;
+  --footer-ink: #faf7f2;
+  --footer-muted: #b8ada0;
+  --footer-border: rgba(250, 247, 242, 0.14);
+
+  --quad-gradient: linear-gradient(
+    90deg,
+    #e07a5f 0 25%,
+    #f4a261 25% 50%,
+    #047857 50% 75%,
+    #5b8db8 75% 100%
+  );
+
+  /* Type */
+  --font-display: "Salary Display", "Noto Serif SC", "Source Han Serif SC",
+    "Songti SC", "SimSun", serif;
+  --font-body: "Noto Sans SC", "Microsoft YaHei UI", "PingFang SC", "Segoe UI",
+    sans-serif;
+  --font-mono: "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+
+  --text-display: clamp(3.25rem, 8.5vw, 7.5rem);
+  --text-h2: clamp(2rem, 4vw, 3.25rem);
+  --text-card-title: clamp(1.5rem, 2.4vw, 2rem);
+  --text-number: clamp(2.5rem, 5vw, 4rem);
+  --text-body: 1rem;
+  --text-small: 0.8125rem;
+  --text-label: 0.6875rem;
+
+  /* Space */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  --container-max: 1200px;
+  --gutter: clamp(20px, 5vw, 48px);
+  --section-y: clamp(80px, 12vw, 160px);
+  --header-h: 72px;
+
+  /* Radius */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+
+  /* Depth */
+  --shadow-card: 0 24px 70px rgba(90, 60, 40, 0.14),
+    0 6px 18px rgba(90, 60, 40, 0.07);
+  --shadow-card-hover: 0 36px 96px rgba(90, 60, 40, 0.2),
+    0 10px 26px rgba(90, 60, 40, 0.09);
+  --shadow-soft: 0 10px 30px rgba(90, 60, 40, 0.08);
+  --shadow-window: 0 18px 50px rgba(60, 40, 25, 0.16),
+    0 2px 8px rgba(60, 40, 25, 0.08);
+
+  /* Easing */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@media (max-width: 767px) {
+  :root {
+    --header-h: 64px;
+  }
+}

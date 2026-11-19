@@ -1,0 +1,295 @@
+/*
+ * Motion is opt-in: the head script adds .motion-ok only when the visitor
+ * has not asked for reduced motion. Every hidden start state lives here so
+ * the page is fully visible when JS or motion is unavailable.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  html.motion-ok .site-header {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  html.motion-ok .hero__eyebrow {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  html.motion-ok .hero__title .line__inner {
+    transform: translateY(118%);
+  }
+
+  html.motion-ok .title-underline path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  html.motion-ok .hero__intro,
+  html.motion-ok .hero__actions,
+  html.motion-ok .hero__meta,
+  html.motion-ok .hero__links,
+  html.motion-ok .hero__clock {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  html.motion-ok .hero__aside .hero__meta-line {
+    transform: scaleX(0);
+  }
+
+  html.motion-ok .hero__divider .quad-line {
+    transform: scaleX(0);
+  }
+}
+
+/* If the module never runs, reveal the poster after three seconds. */
+html.motion-fallback .site-header,
+html.motion-fallback .hero__eyebrow,
+html.motion-fallback .hero__title .line__inner,
+html.motion-fallback .hero__intro,
+html.motion-fallback .hero__actions,
+html.motion-fallback .hero__meta,
+html.motion-fallback .hero__links,
+html.motion-fallback .hero__clock,
+html.motion-fallback .hero__aside .hero__meta-line,
+html.motion-fallback .hero__divider .quad-line {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+html.motion-fallback .title-underline path {
+  stroke-dashoffset: 0 !important;
+}
+
+/* ——— Keyframes ——— */
+@keyframes card-sheen {
+  0% {
+    opacity: 0;
+    transform: translate3d(-180%, 0, 0) rotate(10deg);
+  }
+
+  18% {
+    opacity: 0.9;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(320%, 0, 0) rotate(10deg);
+  }
+}
+
+@keyframes mini-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-1.2deg);
+  }
+
+  50% {
+    transform: translate3d(0, -5px, 0) rotate(-0.8deg);
+  }
+}
+
+@keyframes sun-breathe {
+  0%,
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.72;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes aurora-drift {
+  0% {
+    transform: scale(1.04) translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: scale(1.1) translate3d(-2%, 2%, 0);
+  }
+}
+
+@keyframes marquee-slide {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes status-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12);
+  }
+
+  50% {
+    box-shadow: 0 0 0 5px rgba(4, 120, 87, 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero__sun {
+    will-change: transform, opacity;
+    animation: sun-breathe 16s var(--ease-in-out) infinite;
+  }
+
+  .mini__float {
+    will-change: transform;
+    animation: mini-float 7s var(--ease-in-out) infinite;
+  }
+
+  .status-dot--green {
+    animation: status-pulse 4.5s var(--ease-in-out) infinite;
+  }
+
+  .aurora-fallback::before {
+    animation: aurora-drift 30s ease-in-out infinite alternate;
+  }
+}
+
+/* Pause every CSS loop while the tab is hidden. */
+html.page-hidden .hero__sun,
+html.page-hidden .mini__float,
+html.page-hidden .aurora-fallback::before,
+html.page-hidden .status-dot--green,
+html.page-hidden .marquee__track,
+html.page-hidden .card__sheen {
+  animation-play-state: paused !important;
+}
+
+/* ——— Custom cursor ——— */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-120px, -120px, 0) translate(-50%, -50%);
+}
+
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--coral-strong);
+  transition:
+    opacity 0.2s var(--ease-out),
+    width 0.25s var(--ease-out),
+    height 0.25s var(--ease-out);
+}
+
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(45, 42, 38, 0.55);
+  border-radius: 50%;
+  transition:
+    width 0.35s var(--ease-out),
+    height 0.35s var(--ease-out),
+    opacity 0.2s var(--ease-out),
+    border-color 0.25s var(--ease-out);
+}
+
+.cursor-dot.is-visible,
+.cursor-ring.is-visible {
+  opacity: 1;
+}
+
+.cursor-ring.is-link {
+  width: 46px;
+  height: 46px;
+  border-color: var(--coral-strong);
+}
+
+.cursor-ring.is-card {
+  width: 58px;
+  height: 58px;
+  border-color: var(--coral-strong);
+}
+
+.cursor-ring.is-down {
+  width: 26px;
+  height: 26px;
+}
+
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none;
+}
+
+/* ——— Reduced motion ——— */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .marquee__track {
+    flex-wrap: wrap;
+    width: auto;
+    animation: none !important;
+  }
+
+  .marquee__viewport {
+    overflow: visible;
+    padding-inline: var(--gutter);
+  }
+
+  .marquee__group {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    gap: 6px clamp(16px, 1.5vw, 24px);
+    width: 100%;
+    padding-right: 0;
+  }
+
+  .marquee__item {
+    white-space: normal;
+  }
+
+  /* The diamonds belong to the moving band; in a static paragraph they
+     orphan at line starts and read as a wrap accident. */
+  .marquee__sep {
+    display: none;
+  }
+
+  .marquee__group:nth-child(2) {
+    display: none;
+  }
+
+  .marquee__control {
+    display: none;
+  }
+
+  .mini__float {
+    transform: rotate(-1.2deg);
+  }
+
+  .cursor-dot,
+  .cursor-ring {
+    display: none !important;
+  }
+
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: auto !important;
+  }
+}
+
+@media (pointer: coarse) {
+  .cursor-dot,
+  .cursor-ring {
+    display: none !important;
+  }
+}

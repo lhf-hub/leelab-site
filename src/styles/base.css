@@ -1,0 +1,349 @@
+@font-face {
+  font-family: "Salary Display";
+  src: url("/assets/noto-serif-sc-display.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + 24px);
+  scrollbar-color: var(--border-strong) transparent;
+  scrollbar-width: thin;
+  background: var(--bg);
+}
+
+body {
+  position: relative;
+  min-height: 100svh;
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.8;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--coral-soft);
+  color: var(--ink-strong);
+}
+
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--coral-strong);
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-card-title);
+}
+
+p {
+  text-wrap: pretty;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+time,
+[data-ticker-amount] {
+  font-variant-numeric: tabular-nums;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  transform: translateY(-160%);
+  transition: transform 0.25s var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+  transform: translateY(0);
+}
+
+main {
+  position: relative;
+  z-index: 1;
+}
+
+main:focus,
+main:focus-visible {
+  outline: none;
+}
+
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+/* Quiet signal, not a decorative halo */
+.status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-dot--green {
+  color: var(--green);
+  background: var(--green);
+  box-shadow: 0 0 0 4px var(--green-soft);
+}
+
+.status-dot--coral {
+  color: var(--coral);
+  background: var(--coral);
+  box-shadow: 0 0 0 4px var(--coral-soft);
+}
+
+.quad-line {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--quad-gradient);
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.section-label::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  flex: none;
+  background: var(--border-strong);
+}
+
+.section-label__slash {
+  color: var(--coral-strong);
+  letter-spacing: 0;
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  opacity: 0.85;
+}
+
+.brand-mark path {
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.brand-mark__coral {
+  stroke: var(--coral);
+}
+
+.brand-mark__amber {
+  stroke: var(--amber);
+}
+
+.brand-mark__green {
+  stroke: var(--green);
+}
+
+.brand-mark__blue {
+  stroke: var(--blue);
+}
+
+/* Fixed paper-light backdrop */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--bg);
+  pointer-events: none;
+}
+
+#aurora {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.4s var(--ease-out);
+}
+
+html.webgl-ready #aurora {
+  opacity: 1;
+}
+
+.aurora-fallback {
+  position: absolute;
+  inset: -2%;
+  background: var(--bg);
+  transition: opacity 1.2s var(--ease-out);
+}
+
+.aurora-fallback::before {
+  content: "";
+  position: absolute;
+  inset: -15%;
+  background:
+    radial-gradient(34% 38% at 72% 20%, rgba(244, 162, 97, 0.3), transparent 70%),
+    radial-gradient(38% 40% at 18% 58%, rgba(224, 122, 95, 0.14), transparent 72%),
+    radial-gradient(42% 42% at 84% 84%, rgba(4, 120, 87, 0.1), transparent 70%),
+    radial-gradient(30% 34% at 36% 24%, rgba(91, 141, 184, 0.12), transparent 72%);
+  filter: blur(34px);
+  transform: scale(1.04);
+  will-change: transform;
+}
+
+.aurora-fallback::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 92% at 50% 38%,
+    transparent 42%,
+    rgba(250, 247, 242, 0.55) 100%
+  );
+}
+
+html.webgl-ready .aurora-fallback {
+  opacity: 0;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 220px 220px;
+}
+
+/* No-JS: a clock placeholder and an inert pause button are worse than absent. */
+html:not(.js) .hero__clock,
+html:not(.js) .marquee__control {
+  display: none;
+}
+
+@media (pointer: fine) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border: 3px solid var(--bg);
+    border-radius: 999px;
+    background: var(--border-strong);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--subtle);
+  }
+}
