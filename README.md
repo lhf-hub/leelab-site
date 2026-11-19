@@ -1,11 +1,17 @@
 # leelab-site
 
-Lee 的个人网站。暖色、纸张感、克制的单页主页；首版放 **SalaryTicker** + **JobPilot** 两个项目，以及博客和 GitHub 入口。
+Lee 的个人网站。**全站暗色、动效优先、英文为主中文为辅**的单页主页：3D 肖像 + 超大字号 + 两个项目（SalaryTicker / JobPilot）+ 博客 / GitHub / 邮箱入口。
 
-- 本地已完成，**尚未部署**。
+- 本地已完成 v3，**尚未部署**。
 - 域名已确认：`https://leelab.com.cn/`（canonical / OG 已按此预留；DNS、服务器、Nginx 尚未配置）。
 - 身份：**Lee**。品牌：**leelab**。邮箱：`leemail208@163.com`（明文 + `mailto:`）。
-- 早期「Less」是误读，已全站移除；也不使用「Lee 老师」。
+- 早期「Less」是误读；也不使用「Lee 老师」。
+- 设计方向参考 MotionSites 上的 agency / portfolio 类站点：暗色、满屏 Hero、3D 人物、打字机、超大字号。
+
+## 分支
+
+- `main`：v2 暖纸版基线（可回滚）。
+- `v3`：当前暗色版。
 
 ## 已确认的项目与链接
 
@@ -17,16 +23,13 @@ Lee 的个人网站。暖色、纸张感、克制的单页主页；首版放 **S
 | GitHub | `https://github.com/lhf-hub?tab=repositories` |
 | 邮箱 | `leemail208@163.com` |
 
-- JobPilot 还没有独立域名，卡片上标「域名待定 / 在线预览」；拿到域名和 HTTPS 后，更新卡片和 footer 的链接即可。
-- 两个项目用「错落」排法：SalaryTicker 是完整的大展品卡，JobPilot 是右侧偏移的横向小卡。
-- 个人标记：四色八芒星 + Lee 字标；favicon、apple-touch-icon、OG 图都是个人站版本，不再使用 SalaryTicker 的图标。
-
 ## 技术栈
 
 - Vite 8 + vanilla JavaScript（无 React / Vue / Tailwind）
-- GSAP 3 + ScrollTrigger
-- Lenis 1.3
-- Three.js 0.187（约 131 KB gzip，**首次交互时才加载**；CSS 极光负责首屏，不参与首屏阻塞）
+- GSAP 3 + ScrollTrigger（首屏时间线、滚动 reveal、窗口视差）
+- Lenis 1.3（平滑滚动，动态 import）
+- Three.js 0.187（3D 肖像，空闲时动态 import，独立 chunk）
+- 字体全部自托管：Anton（展示）、Inter（正文）、IBM Plex Mono（数据/标签）
 
 ## 常用命令
 
@@ -40,119 +43,101 @@ npm run preview   # 预览构建产物
 ## 目录
 
 ```text
-index.html                 静态语义内容（Hero / Projects / About / Footer）
-package.json
-vite.config.js
+index.html                  语义内容（Hero / Work / About / Contact / Footer）
 public/
   robots.txt
   assets/
-    leelab-mark.svg       个人标记（header / footer / favicon）
-    leelab-mark-256.png   apple-touch-icon
-    og-lee.jpg            个人 OG 海报，1200×630
-    app-shot.webp         原始主截图 1455×1051
-    app-shot-800.webp     响应式派生，800×578
-    app-shot-1200.webp    响应式派生，1200×867
-    app-shot.png          主截图 PNG 回退
-    mini-shot.webp / .png 迷你窗
-    jobpilot-shot.webp    JobPilot 在线首页截图，1200×750
-    jobpilot-shot-800.webp
-    jobpilot-shot.png
-    app-icon.png          256×256 SalaryTicker 原始图标（素材；页面只使用 96px 版）
-    app-icon-96.png       卡片内 96×96 派生
-    favicon.ico           旧产品 favicon（页面已改用 leelab-mark.svg）
-    noto-serif-sc-display.woff2
-    OFL-NotoSerifSC.txt   字体许可证，必须保留
+    fonts/                  自托管字体子集（anton / inter / plexmono）
+    leelab-mark.svg         个人标记（favicon）
+    leelab-mark-256.png     apple-touch-icon
+    og-lee.jpg              个人 OG 海报，1200×630（暗色版）
+    app-shot*.{webp,png}    SalaryTicker 主截图（1455×1051 + 响应式派生）
+    jobpilot-shot*.{webp,png} JobPilot 在线预览截图（1200×750 + 派生）
+    mini-shot.* / app-icon*.png / favicon.ico / noto-serif-sc-display.woff2
+                            v2 遗留素材，v3 页面未引用（保留备查）
 src/
-  main.js                  入口、动态加载 WebGL、按顺序初始化/清理
-  data/site.js             身份、链接、projects、demo 金额
+  main.js                   入口：初始化顺序、空闲时加载 3D、清理
+  data/site.js              链接、3D 肖像配置、打字机文案、演示金额
   styles/
-    tokens.css             色板、字号、间距、圆角、阴影、缓动
-    base.css               字体、重置、焦点、纸张噪点、极光兜底
-    layout.css             Header / Hero / Projects / About / Footer
-    card.css               项目卡、JobPilot 伴随卡、3D 分层
-    motion.css             入场初始态、keyframes、自定义光标、降级
+    tokens.css              暗色令牌（色板、字号、间距、圆角、缓动）
+    base.css                字体、重置、颗粒/辉光氛围层、3D 舞台、工具类
+    layout.css              Header / Hero / 章节头 / Work / About / Contact / Footer
+    card.css                项目卡、金额读数、规格表、产品窗口
+    motion.css              入场初始态、自定义光标、reduced-motion 降级
   motion/
-    lenis.js               Lenis + ScrollTrigger 接法
-    shader.js              Three.js 极光（动态 import）
-    intro.js               首屏时间线
-    scroll.js              两张卡的入场 / 视差 / reveal
-    tilt.js                两张卡的 3D tilt、柔光、扫光、迷你窗视差
-    cursor.js              自定义光标
-    ticker.js              SalaryTicker 实时金额（视口外/页面隐藏暂停）
-    ui.js                  header 状态、UTC+8 时钟、锚点、marquee、磁吸
-PRODUCT.md                 产品上下文（Impeccable 记录）
-DESIGN.md                  设计系统（tokens + 规则 + 组件）
+    portrait.js             Three.js 肖像（GLB + 程序化替身）
+    intro.js                首屏标题遮罩时间线
+    scroll.js               header 状态、reveal、Hero→肖像滚动交接、窗口视差
+    typewriter.js           打字机
+    ticker.js               实时金额（视口外/页面隐藏暂停）
+    cursor.js               自定义光标
+    ui.js                   UTC+8 时钟、磁吸按钮、卡片指针光
+    lenis.js                平滑滚动
+DESIGN.md                   设计系统（暗色 v3）
+CLAUDE.md                   给后续会话的短规则
+PRODUCT.md                  产品事实
 ```
+
+## 3D 肖像（重要）
+
+Hero 的 3D 舞台已经做好，**现在跑的是程序化替身**（金属二十面体 + 轨道环），不是人像。
+
+接真人像只要一步：
+
+1. 把导出的模型放到 `public/assets/portrait.glb`（.glb / .gltf + 贴图，建议 ≤ 3 MB，单位米、朝 +Z）。
+2. 不用改代码：`src/motion/portrait.js` 会优先加载它，失败才回落到替身。
+3. 需要微调时改 `src/data/site.js` 里的 `portrait`：`height`（占屏高比例）、`x`（水平偏移）。
+
+模型会做：自动缓慢旋转、鼠标视差、滚动驱动旋转与上移、页面隐藏暂停、reduced-motion 只渲染一帧。≤ 1023px 宽不加载 3D（性能与排版考虑）。
 
 ## 页面与交互
 
-- **Header**：个人标记 + Lee / leelab；项目 / 关于 / 博客 ↗ / GitHub ↗ / 写封邮件；顶部 3px 四色线；滚动后收缩并加暖色玻璃背景。
-- **Hero**：`LEELAB · 个人站` eyebrow、UTC+8 时钟、两行衬线大标题「谋生有度，生活有光。」、手绘四色下划线、介绍、主 CTA、邮件链接、右侧「独立开发 · Windows 工具与 Web」+ 博客 / GitHub 小链接。
-- **Projects**：左侧 sticky 标签、「先做有用的东西。」、两项目索引；右侧 SalaryTicker 大卡 + 右偏移的 JobPilot 卡。
-- **SalaryTicker 卡**：整张 `<a>`，新标签打开官网；图标、名称、版本、tagline、实时金额（演示数据）、主截图、迷你窗、四项能力 chips、平台信息、访问官网。
-- **JobPilot 卡**：整张 `<a>`，新标签打开预览地址；名称、智能求职助手、Web / 域名待定、tagline、真实首页截图、四项能力 chips、在线预览说明、访问 JobPilot。
-- **About**：Lee 的个人介绍、「谋生有度，生活有光。」引用、博客 / GitHub / 邮箱链接。
-- **Footer**：深墨色收尾；可暂停的四色 marquee（个人站语气）、Lee / leelab、博客 / GitHub / 邮箱。
-- 首屏在 1440 显示个人 Hero 与 Projects 的进入；360 / 390 首屏以个人身份为主，卡片在下方展开。
+- **Header**：`LEE®` 字标 + `leelab`；Work / About / Blog ↗ / GitHub ↗ / Write to me；滚动后收缩并加暗色玻璃。
+- **Hero**：满屏。`I make tools for the hours you sell.` 四行 Anton 大字；右侧 3D 肖像；底部打字机（轮播 4 句）、中文一行、两个 CTA、右侧状态与 scroll 提示。
+- **Work**：`01 / Selected work` + `Two tools, one hand.`；两张整卡链接的项目卡 —— 编号、平台、状态、产品名、中文名、一句 pitch + 中文、SalaryTicker 的实时金额读数（演示数据）、四格规格表、产品窗口截图。
+- **About**：`One person, end to end.`；两段英文 + 一段中文 + 手写感中文签名；右侧规格表（Focus / Role / Stack / Based / Email / Status）。
+- **Contact**：`Got something worth making?` + 大号邮箱 + 博客 / GitHub / Email。
+- **Footer**：暗色 marquee（Build small · ship often / Open for work / Made by one hand）+ 版权与回到顶部。
 
 ## 动效与降级
 
-- 入场：header → eyebrow → 标题行 → 下划线 → 介绍/CTA → 链接 → 四色线；每张卡在进入视口时独立入场。
-- 滚动：标题轻微上移淡出、两张卡各自的截图视差、段落 reveal、极光随滚动偏移。
-- 指针（仅 fine pointer）：两张卡的 tilt ±10°、柔光跟随、单次扫光、磁吸 CTA、自定义光标（6px 点 + 34px 环，链接/卡片放大）。
-- 持续：SalaryTicker 金额 ticker、迷你窗浮动、背景极光、页脚 marquee、状态点低频脉冲。
-- **reduced-motion**：不加载 Lenis / Three / 自定义光标；marquee 静态换行、隐藏分隔符；ticker 固定为基准值；所有内容可见。
-- **触屏**：无 tilt / 自定义光标；保留 reveal、ticker、marquee；卡片保留按压态。
-- 页面隐藏时暂停 ticker、CSS 动画和 WebGL 渲染。
-- 未做 HANDOFF 标注为可选的 Hero 短 pin；用标题视差和卡片视差代替。
+- 入场：标题四行遮罩上移 → topline / 底部渐显（等待字体就绪，避免跳动）。
+- 滚动：header 收缩、`[data-reveal]` 渐显、Hero 滚出时肖像放大旋转并淡出、产品窗口轻微视差。
+- 指针（fine pointer）：磁吸按钮（≤8px）、卡片指针光、自定义光标（信号点 + 滞后环）。
+- 持续：打字机、实时金额、marquee、3D 缓慢自转、UTC+8 时钟。
+- **reduced-motion**：不加载 Lenis / 光标 / 玻璃动效；首屏直接呈现；marquee 静态；金额固定；3D 只渲染一帧或跳过。
+- **触屏 / ≤1023px**：不加载 3D、无自定义光标；打字机与金额保留。
+- 页面隐藏时暂停金额 ticker 与 WebGL 渲染循环。
 
 ## 内容与合规
 
-- SalaryTicker 的金额、截图与迷你窗全部是**演示数据**，卡片上有「演示数据」角标；不是真实工资条。
-- JobPilot 卡片的截图来自当前在线预览页；文案来自该页面的公开介绍。没有编造用户数、下载量或商业成绩。
-- JobPilot 的「域名待定」是事实；拿到域名和 HTTPS 后再更新。
-- 不编造经历、公司、职位、学历、社交账号。
-- 不写「最」「第一」「保证」「100%」等绝对化表述。
-- 中文与英文/数字之间加空格。
-- 无 analytics、外部字体 CDN、密钥或服务器地址。
-- 部署配置（host / user / key / path）不要提交；`.gitignore` 已忽略常见本地配置与 `.impeccable/review/`。
+- SalaryTicker 的金额是**演示数据**，卡片上有 `Demo data` 角标；不是真实工资条。
+- JobPilot 截图来自当前在线预览页；不编造用户数、下载量、商业成绩。
+- JobPilot 的 `Domain / Pending` 是事实；拿到域名和 HTTPS 后再更新。
+- 不编造经历、公司、职位、学历、社交账号；不写「最」「第一」「保证」「100%」。
+- 中英文之间加空格；英文为主、中文为辅。
+- 无 analytics、外部字体 CDN、密钥或服务器地址；`.gitignore` 已忽略部署配置与 `.impeccable/review/`。
 
 ## 素材来源
 
-- `app-shot.webp` / `app-shot.png`、`mini-shot.*`、`app-icon.png`: 来自 HANDOFF_PROMPT.md 指定的 SalaryTicker 演示素材。
-- `app-shot-800.webp` / `app-shot-1200.webp`：由 `app-shot.webp` 等比缩放（WebP quality 82），用于响应式 srcset。
-- `app-icon-96.png`：由 `app-icon.png` 缩放到 96×96，仅用于卡片内 44px 显示。
-- `jobpilot-shot.webp` / `jobpilot-shot-800.webp` / `jobpilot-shot.png`：2026-11-19 从 `http://47.106.222.233:8000/` 的公开首页截取并缩放；如果 JobPilot 首页改版，需要重新截取。
-- `leelab-mark.svg` / `leelab-mark-256.png`：为个人站绘制的四色八芒星标记。
-- `og-lee.jpg`：用站点自己的字体、颜色和标题生成的 1200×630 个人海报，不是产品截图。
-- `noto-serif-sc-display.woff2`：Noto Serif SC 显示子集，许可证见 `public/assets/OFL-NotoSerifSC.txt`，必须随项目保留。
-- 不修改 SalaryTicker 仓库。
+- `app-shot*`、`jobpilot-shot*`：同 v2，来自 SalaryTicker 演示素材与 JobPilot 公开首页截图。
+- `og-lee.jpg`：v3 暗色海报，用站点自己的字体与标题在本地渲染。
+- `leelab-mark.svg` / `leelab-mark-256.png`：v3 个人标记（黑底珊瑚 L）。
+- `fonts/*.woff2`：Google Fonts 的 latin 子集（Anton / Inter / IBM Plex Mono，均为 OFL）。
+- v2 的 Noto Serif SC 子集与四色标记仍在 `public/assets/`，v3 页面不再引用。
 
 ## 验证（2026-11-19，本地）
 
-- `npm run build` 成功；`npm run preview` 正常；`npm run dev` 无控制台错误或警告。
-- Lighthouse（headless Chrome，本地 preview，SwiftShader）：
-  - Desktop：Performance **100** / Accessibility **100** / Best Practices **100** / SEO **100**
-  - Mobile：Performance **96** / Accessibility **100** / Best Practices **100** / SEO **100**
-  - Mobile LCP 约 1.7 s，CLS 0；数值会随机器与动画状态波动。
-- 360 / 390 / 768 / 1440 宽均无横向滚动。
-- 触屏模拟：无自定义光标、无 tilt。
-- `prefers-reduced-motion: reduce`：无 Lenis、无 WebGL、无 marquee 动画，两张卡与链接完整可见。
-- 键盘：Tab 可到 skip link、导航（含博客 / GitHub）、两个项目索引、两张卡、About 链接和页脚链接；焦点环可见。
-- 两个卡片链接均为 `target="_blank"` + `rel="noopener noreferrer"`；JobPilot 为 HTTP 预览地址。
+- `npm run build` 通过；`npm run preview` 正常；生产构建无控制台错误/警告。
+- 1440 / 1280 / 768 / 390 均无横向滚动；1440 与 390 已逐屏检查。
+- 3D chunk 为懒加载（约 158 kB gzip），不参与首屏；字体全部本地。
+- 键盘：skip link、导航、两张项目卡、About / Contact 链接、回到顶部均可 Tab。
+- **待复测**：Lighthouse 分数、Safari / Firefox 首次渲染、真实 GLB 接入后的加载与降级。
 
 ## 尚未完成 / 待确认
 
-- **部署**：域名已确认，但服务器归属、Nginx server block、HTTPS、DNS 解析都还没做。构建产物是纯静态 `dist/`，部署前请确认这些边界。
-- **JobPilot 域名**：目前只有 HTTP IP 预览；分配域名 / HTTPS 后更新卡片 href、About 链接和 README。
-- **JobPilot 截图**：当前使用 2026-11-19 的公开首页截图；产品改版后建议重截。
-- **其他社交链接**：目前只放了博客和 GitHub；X / Bilibili / 小红书等没有已确认 URL。
-- **人像 / 更多项目**：没有素材或真实项目，暂不添加、不编造。
-- **统计 / 追踪**：首版没有，需要时先确认。
-
-## 相关文档
-
-- `HANDOFF_PROMPT.md`：原始完整需求、视觉、动效与验收（首版单卡边界已被 2026-11-19 的多项目 / 外链方向扩展）。
-- `CLAUDE.md`：给后续 Claude Code 会话的短规则与当前状态。
-- `PRODUCT.md`：产品事实与已确认决定。
-- `DESIGN.md`：设计 tokens、组件与使用规则。
+- **3D 人像**：等 `public/assets/portrait.glb`（用户提供）。
+- **部署**：域名已确认；服务器、Nginx、HTTPS、DNS 未配置。
+- **JobPilot 域名**：只有 HTTP IP 预览。
+- **OG / favicon**：v3 已重做；如需 16px 极致清晰度可再出专用小尺寸位图。
+- **统计 / 追踪**：没有，需要时先确认。
