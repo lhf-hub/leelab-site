@@ -1,72 +1,48 @@
 import gsap from 'gsap'
 
-/**
- * One authored opening: header, eyebrow, the two title lines, the drawn
- * underline, then the supporting copy. The card gets its own entrance when
- * it comes into view, so it never animates unseen below the fold.
+/*
+ * The hero is the first thing anyone sees, so the intro is short and decisive:
+ * the four display lines rise out of their masks, then the lower register fades.
  */
-export function initIntro({ enabled = true } = {}) {
-  if (!enabled) return () => {}
-
+export function initIntro({ enabled }) {
   const root = document.documentElement
-  const lines = gsap.utils.toArray('.hero__title .line__inner')
-  lines.forEach((line) => {
-    line.style.willChange = 'transform'
-  })
+  const lines = Array.from(document.querySelectorAll('.hero__title .line > span'))
+  const topline = document.querySelector('.hero__topline')
+  const foot = document.querySelector('.hero__foot')
 
-  const ctx = gsap.context(() => {
-    const tl = gsap.timeline({
+  if (!enabled) {
+    root.classList.add('intro-done')
+    return () => {}
+  }
+
+  let tl = null
+  let killed = false
+  const start = () => {
+    if (killed || !lines.length) return
+    tl = gsap.timeline({
       defaults: { ease: 'power3.out' },
-      onComplete: () => {
-        root.classList.add('intro-done')
-        root.classList.remove('motion-fallback')
-        lines.forEach((line) => {
-          line.style.willChange = ''
-        })
-      },
+      onComplete: () => root.classList.add('intro-done'),
     })
 
-    tl.to('.site-header', { y: 0, opacity: 1, duration: 0.8 }, 0)
-      .to(
-        '.hero__eyebrow',
-        {
-          clipPath: 'inset(0 0% 0 0)',
-          duration: 0.9,
-          ease: 'power2.inOut',
-        },
-        0.15,
-      )
-      .to(lines, { y: 0, duration: 1.05, stagger: 0.09 }, 0.2)
-      .to(
-        '.title-underline path',
-        {
-          strokeDashoffset: 0,
-          duration: 1.05,
-          ease: 'power2.inOut',
-        },
-        0.85,
-      )
-      .to('.hero__clock', { y: 0, opacity: 1, duration: 0.8 }, 0.55)
-      .to('.hero__intro', { y: 0, opacity: 1, duration: 0.8 }, 0.68)
-      .to('.hero__actions', { y: 0, opacity: 1, duration: 0.8 }, 0.76)
-      .to(
-        '.hero__aside .hero__meta-line',
-        { scaleX: 1, duration: 0.8, ease: 'power3.inOut' },
-        0.8,
-      )
-      .to('.hero__meta', { y: 0, opacity: 1, duration: 0.8 }, 0.86)
-      .to('.hero__links', { y: 0, opacity: 1, duration: 0.8 }, 0.95)
-      .to(
-        '.hero__divider .quad-line',
-        { scaleX: 1, duration: 1.1, ease: 'power3.inOut' },
-        0.55,
-      )
-  }, root)
+    tl.to(lines, { y: 0, duration: 1.05, stagger: 0.075 }, 0)
+
+    if (topline) {
+      tl.to(topline, { opacity: 1, duration: 0.7 }, 0.2)
+    }
+    if (foot) {
+      tl.to(foot, { opacity: 1, duration: 0.8 }, 0.55)
+    }
+  }
+
+  // Waiting for the display face avoids a reflow mid-animation.
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(start).catch(start)
+  } else {
+    start()
+  }
 
   return () => {
-    ctx.revert()
-    lines.forEach((line) => {
-      line.style.willChange = ''
-    })
+    killed = true
+    tl?.kill()
   }
 }

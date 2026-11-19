@@ -1,92 +1,71 @@
-import { site } from '../data/site.js'
+import { demo } from '../data/site.js'
 
-/**
- * The number accrues only while the card is on screen and the tab is
- * visible, so returning to the page continues instead of jumping. The
- * markup already carries the base value for no-JS and reduced-motion.
+const formatter = new Intl.NumberFormat('en-US', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
+/*
+ * The salary readout is the product's one live number. It ticks while it is on
+ * screen, stops when the tab is hidden, and never pretends to be real pay.
  */
-export function initTicker({ reduced = false } = {}) {
+export function initTicker({ reduced }) {
   const el = document.querySelector('[data-ticker-amount]')
   if (!el) return () => {}
 
-  const { base, perSecond } = site.salaryTicker
-  const format = new Intl.NumberFormat('zh-CN', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
-
-  const value = () => `¥${format.format(base + perSecond * elapsed)}`
-  let elapsed = 0
-  let lastText = ''
-
-  function paint() {
-    const next = value()
-    if (next !== lastText) {
-      el.textContent = next
-      lastText = next
-    }
+  let value = demo.monthly
+  const render = () => {
+    el.textContent = `¥${formatter.format(value)}`
   }
 
   if (reduced) {
-    paint()
+    render()
     return () => {}
   }
 
-  const card = document.querySelector('[data-card]')
-  let visible = true
-  let last = performance.now()
-  let timer = 0
-  let observer = null
+  let raf = 0
+  let last = 0
+  let onScreen = true
 
-  function step() {
-    const now = performance.now()
-    const delta = Math.min(now - last, 1000)
+  const step = (now) => {
+    if (!last) last = now
+    const dt = Math.min((now - last) / 1000, 0.2)
     last = now
-
-    if (!document.hidden && visible) {
-      elapsed += delta / 1000
-    }
-
-    paint()
+    value += demo.perSecond * dt
+    render()
+    raf = requestAnimationFrame(step)
   }
 
-  function start() {
-    last = performance.now()
-    if (!timer) timer = window.setInterval(step, 200)
+  const stop = () => {
+    cancelAnimationFrame(raf)
+    raf = 0
+    last = 0
   }
 
-  function stop() {
-    if (timer) {
-      window.clearInterval(timer)
-      timer = 0
-    }
-  }
-
-  function onVisibility() {
-    if (document.hidden) {
+  const sync = () => {
+    if (onScreen && !document.hidden && !raf) {
+      raf = requestAnimationFrame(step)
+    } else if ((!onScreen || document.hidden) && raf) {
       stop()
-    } else {
-      last = performance.now()
-      start()
     }
   }
 
-  if ('IntersectionObserver' in window && card) {
-    observer = new IntersectionObserver(
-      (entries) => {
-        visible = entries[0]?.isIntersecting ?? true
-      },
-      { threshold: 0.05 },
-    )
-    observer.observe(card)
-  }
+  const io = new IntersectionObserver(
+    ([entry]) => {
+      onScreen = entry.isIntersecting
+      sync()
+    },
+    { threshold: 0 },
+  )
+  io.observe(el)
 
+  const onVisibility = () => sync()
   document.addEventListener('visibilitychange', onVisibility)
-  start()
+  sync()
 
   return () => {
     stop()
-    observer?.disconnect()
+    io.disconnect()
     document.removeEventListener('visibilitychange', onVisibility)
   }
 }

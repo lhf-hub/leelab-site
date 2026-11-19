@@ -1,95 +1,68 @@
+/* ==========================================================================
+   leelab v3 — monochrome dark, one signal colour, data green.
+   ========================================================================== */
+
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
-  /* Warm palette */
-  --bg: #faf7f2;
-  --bg-soft: #f5eee4;
-  --surface: #fffcf7;
-  --surface-raised: #ffffff;
-  --ink: #2d2a26;
-  --ink-strong: #1f1b17;
-  --muted: #665c52;
-  --subtle: #8a8074;
-  --border: #e6ddd0;
-  --border-strong: #d6c9b8;
+  /* Ground: warm black, not blue-black. */
+  --bg: #080706;
+  --bg-raised: #100e0c;
+  --bg-sink: #050403;
+  --surface: #14110e;
 
-  --coral: #e07a5f;
-  --coral-strong: #b4533c;
-  --coral-soft: #fbede6;
-  --green: #047857;
-  --green-strong: #17694f;
-  --green-soft: #e7f6f0;
-  --amber: #f4a261;
-  --amber-strong: #a45a0b;
-  --amber-soft: #fdf1e4;
-  --blue: #5b8db8;
-  --blue-strong: #3b6e8f;
-  --blue-soft: #eaf2f8;
-  --teal: #2a9d8f;
-  --teal-soft: #e6f3f1;
+  /* Ink */
+  --ink: #f4efe7;
+  --ink-dim: rgba(244, 239, 231, 0.62);
+  --ink-faint: rgba(244, 239, 231, 0.34);
+  --line: rgba(244, 239, 231, 0.13);
+  --line-strong: rgba(244, 239, 231, 0.28);
 
-  --footer-bg: #1f1b17;
-  --footer-ink: #faf7f2;
-  --footer-muted: #b8ada0;
-  --footer-border: rgba(250, 247, 242, 0.14);
+  /* Signal: the old coral, pushed until it reads on black. */
+  --signal: #ff5a36;
+  --signal-soft: rgba(255, 90, 54, 0.16);
+  --signal-glow: rgba(255, 90, 54, 0.42);
 
-  --quad-gradient: linear-gradient(
-    90deg,
-    #e07a5f 0 25%,
-    #f4a261 25% 50%,
-    #047857 50% 75%,
-    #5b8db8 75% 100%
-  );
+  /* Data: money is the only green. */
+  --data: #5cf0a8;
+  --data-dim: rgba(92, 240, 168, 0.18);
+
+  /* Amber for the demo badge only. */
+  --warn: #ffb45f;
 
   /* Type */
-  --font-display: "Salary Display", "Noto Serif SC", "Source Han Serif SC",
-    "Songti SC", "SimSun", serif;
-  --font-body: "Noto Sans SC", "Microsoft YaHei UI", "PingFang SC", "Segoe UI",
+  --font-display: "anton", "Impact", "Haettenschweiler", "Arial Narrow Bold",
     sans-serif;
-  --font-mono: "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+  --font-sans: "inter", "Noto Sans SC", "Microsoft YaHei UI", "PingFang SC",
+    "Segoe UI", sans-serif;
+  --font-mono: "plexmono", "SF Mono", "Cascadia Mono", "Consolas", monospace;
+  --font-cn-serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
 
-  --text-display: clamp(3.25rem, 8.5vw, 7.5rem);
-  --text-h2: clamp(2rem, 4vw, 3.25rem);
-  --text-card-title: clamp(1.5rem, 2.4vw, 2rem);
-  --text-number: clamp(2.5rem, 5vw, 4rem);
-  --text-body: 1rem;
-  --text-small: 0.8125rem;
-  --text-label: 0.6875rem;
+  --text-hero: clamp(3.7rem, 10.6vw, 12.5rem);
+  --text-mega: clamp(2.6rem, 7.2vw, 7.5rem);
+  --text-h2: clamp(1.8rem, 3.4vw, 3.1rem);
+  --text-body: clamp(1rem, 1.1vw, 1.125rem);
+
+  --label: 0.6875rem;
+  --label-track: 0.22em;
 
   /* Space */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-12: 48px;
-  --space-16: 64px;
-  --space-24: 96px;
-  --space-32: 128px;
-
-  --container-max: 1200px;
-  --gutter: clamp(20px, 5vw, 48px);
-  --section-y: clamp(80px, 12vw, 160px);
-  --header-h: 72px;
+  --gut: clamp(18px, 3.4vw, 46px);
+  --max: 1440px;
+  --edge: clamp(20px, 4.4vw, 68px);
+  --section-y: clamp(88px, 12vw, 180px);
 
   /* Radius */
-  --radius-sm: 12px;
-  --radius-md: 20px;
-  --radius-lg: 28px;
+  --r-sm: 10px;
+  --r-md: 18px;
+  --r-lg: 26px;
+  --r-pill: 999px;
 
-  /* Depth */
-  --shadow-card: 0 24px 70px rgba(90, 60, 40, 0.14),
-    0 6px 18px rgba(90, 60, 40, 0.07);
-  --shadow-card-hover: 0 36px 96px rgba(90, 60, 40, 0.2),
-    0 10px 26px rgba(90, 60, 40, 0.09);
-  --shadow-soft: 0 10px 30px rgba(90, 60, 40, 0.08);
-  --shadow-window: 0 18px 50px rgba(60, 40, 25, 0.16),
-    0 2px 8px rgba(60, 40, 25, 0.08);
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Easing */
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --header-h: 78px;
 }
 
 @media (max-width: 767px) {

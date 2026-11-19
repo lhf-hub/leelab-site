@@ -7,9 +7,9 @@ import './styles/motion.css'
 import { initSmoothScroll } from './motion/lenis.js'
 import { initUI } from './motion/ui.js'
 import { initTicker } from './motion/ticker.js'
+import { initTypewriter } from './motion/typewriter.js'
 import { initIntro } from './motion/intro.js'
 import { initScroll } from './motion/scroll.js'
-import { initTilt } from './motion/tilt.js'
 import { initCursor } from './motion/cursor.js'
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -18,8 +18,6 @@ const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')
 const motion = !reduceMotion.matches
 const fine = finePointer.matches
 
-// The head script skips this class for reduced motion, but a settings change
-// between parse and module execution should never leave the poster hidden.
 if (!motion) {
   document.documentElement.classList.remove('motion-ok')
 }
@@ -27,90 +25,72 @@ if (!motion) {
 const smooth = initSmoothScroll({ enabled: motion })
 
 /*
- * The WebGL aurora is a progressive layer: the CSS fallback paints the first
- * viewport, and the Three chunk is fetched on the first real interaction so it
- * never competes with the initial paint. It is never loaded for reduced-motion
- * or data-saver visitors.
+ * The 3D portrait is a progressive layer: the page is complete without it, so
+ * it is fetched once the browser is idle and never blocks the hero type.
  */
-let aurora = null
-let auroraScroll = 0
-let auroraAborted = false
-const auroraTrigger = new AbortController()
+let portrait = null
+let portraitDestroyed = false
+let portraitScroll = 0
+const stage = document.querySelector('[data-stage]')
 
-const auroraProxy = {
-  setScroll(progress) {
-    auroraScroll = progress
-    aurora?.setScroll(progress)
-  },
-  destroy() {
-    auroraAborted = true
-    auroraTrigger.abort()
-    aurora?.destroy?.()
-    aurora = null
-  },
-}
+function loadPortrait() {
+  if (portraitDestroyed || !stage) return
+  if (navigator.connection && navigator.connection.saveData) return
 
-function loadAurora() {
-  if (auroraAborted) return
-
-  import('./motion/shader.js')
-    .then(({ initAurora }) => {
-      if (auroraAborted) return
-      aurora = initAurora({ reduced: false })
-      aurora.setScroll(auroraScroll)
+  import('./motion/portrait.js')
+    .then(({ initPortrait }) => {
+      if (portraitDestroyed) return
+      portrait = initPortrait({ mount: stage, reduced: !motion })
+      portrait.setScroll?.(portraitScroll)
     })
     .catch(() => {
-      // The CSS fallback is already doing the job.
+      /* No WebGL: the page is still a poster. */
     })
 }
 
-const canLoadAurora =
-  motion && !(navigator.connection && navigator.connection.saveData)
+const idle =
+  'requestIdleCallback' in window
+    ? (fn) => window.requestIdleCallback(fn, { timeout: 1600 })
+    : (fn) => window.setTimeout(fn, 900)
 
-if (canLoadAurora) {
-  const startAurora = () => {
-    auroraTrigger.abort()
-    loadAurora()
-  }
+idle(loadPortrait)
 
-  ;['pointermove', 'touchstart', 'keydown', 'scroll', 'wheel'].forEach((event) => {
-    window.addEventListener(event, startAurora, {
-      once: true,
-      passive: true,
-      signal: auroraTrigger.signal,
-    })
-  })
-}
-
-const ui = initUI({
-  lenis: smooth.lenis,
-  motion,
-  finePointer: fine,
-})
+const ui = initUI({ finePointer: fine })
 const ticker = initTicker({ reduced: !motion })
+const type = initTypewriter({ reduced: !motion })
 const intro = initIntro({ enabled: motion })
-const scroll = initScroll({ enabled: motion, aurora: auroraProxy })
-const tilt = initTilt({ enabled: motion && fine })
+const scroll = initScroll({
+  enabled: motion,
+  onProgress: (progress) => {
+    portraitScroll = progress
+    portrait?.setScroll?.(progress)
+    if (stage) {
+      stage.style.opacity = progress > 0.55 ? String(Math.max(0, 1 - progress * 1.8)) : ''
+    }
+  },
+})
 const cursor = initCursor({ enabled: motion && fine })
 
 const cleanups = [
   smooth.destroy,
-  auroraProxy.destroy,
   ui,
   ticker,
+  type,
   intro,
   scroll,
-  tilt,
   cursor,
 ]
 
 function cleanup() {
+  portraitDestroyed = true
+  portrait?.destroy?.()
+  portrait = null
   while (cleanups.length) {
     const dispose = cleanups.pop()
     try {
       dispose?.()
     } catch (error) {
-      // One failing module must not strand the rest during HMR.
+      /* One failing module must not strand the rest during HMR. */
     }
   }
 }

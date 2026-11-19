@@ -1,39 +1,48 @@
-import Lenis from 'lenis'
-import 'lenis/dist/lenis.css'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-gsap.registerPlugin(ScrollTrigger)
-
-export function initSmoothScroll({ enabled = true } = {}) {
+export function initSmoothScroll({ enabled }) {
   if (!enabled) {
-    return { lenis: null, scrollTo: null, destroy() {} }
+    return { lenis: null, destroy() {} }
   }
 
-  const lenis = new Lenis({
-    lerp: 0.09,
-    smoothWheel: true,
-    smoothTouch: false,
-    wheelMultiplier: 1,
-    autoRaf: false,
-  })
+  let lenis = null
+  let destroyed = false
 
-  const onScroll = () => ScrollTrigger.update()
-  lenis.on('scroll', onScroll)
+  /*
+   * Lenis is only needed for smooth wheel/touch scrolling. Importing it lazily
+   * keeps the entry bundle honest for reduced-motion visitors.
+   */
+  import('lenis')
+    .then(({ default: Lenis }) => {
+      if (destroyed) return
+      lenis = new Lenis({
+        duration: 1.05,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+        touchMultiplier: 1.6,
+      })
 
-  const tick = (time) => lenis.raf(time * 1000)
-  gsap.ticker.add(tick)
-  gsap.ticker.lagSmoothing(0)
+      let raf = 0
+      const loop = (time) => {
+        lenis?.raf(time)
+        raf = requestAnimationFrame(loop)
+      }
+      raf = requestAnimationFrame(loop)
+      lenis._raf = raf
+    })
+    .catch(() => {
+      /* Native scrolling is still fine. */
+    })
 
   return {
-    lenis,
-    scrollTo(target, options = {}) {
-      lenis.scrollTo(target, options)
+    get lenis() {
+      return lenis
     },
     destroy() {
-      lenis.off('scroll', onScroll)
-      gsap.ticker.remove(tick)
-      lenis.destroy()
+      destroyed = true
+      if (lenis) {
+        cancelAnimationFrame(lenis._raf)
+        lenis.destroy()
+        lenis = null
+      }
     },
   }
 }
