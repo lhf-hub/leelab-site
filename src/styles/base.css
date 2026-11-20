@@ -188,6 +188,30 @@ p {
   mix-blend-mode: screen;
 }
 
+/* A soft coral light that trails the pointer through the page atmosphere. */
+.pointer-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 560px;
+  height: 560px;
+  margin: -280px 0 0 -280px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 90, 54, 0.13),
+    rgba(255, 90, 54, 0.04) 42%,
+    transparent 70%
+  );
+  will-change: transform;
+}
+
+@media (pointer: coarse) {
+  .pointer-glow {
+    display: none;
+  }
+}
+
 /* The portrait canvas sits above the atmosphere and behind the type. */
 .stage {
   position: fixed;

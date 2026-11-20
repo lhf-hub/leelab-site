@@ -272,6 +272,10 @@ html.has-custom-cursor * {
     flex-wrap: wrap;
   }
 
+  .ticker-band__track {
+    animation: none !important;
+  }
+
   .marquee__group:nth-child(2) {
     display: none;
   }

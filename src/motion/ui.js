@@ -5,6 +5,30 @@
 export function initUI({ finePointer }) {
   const cleanups = []
 
+  /* header state + read progress — plain scroll, so it also works when
+     reduced motion turns the GSAP scroll layer off */
+  const header = document.querySelector('[data-header]')
+  const progress = document.querySelector('[data-progress]')
+  let queued = false
+
+  const onScroll = () => {
+    if (queued) return
+    queued = true
+    requestAnimationFrame(() => {
+      const y = window.scrollY
+      header?.classList.toggle('is-scrolled', y > 12)
+      if (progress) {
+        const max = document.documentElement.scrollHeight - window.innerHeight
+        progress.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`
+      }
+      queued = false
+    })
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true })
+  onScroll()
+  cleanups.push(() => window.removeEventListener('scroll', onScroll))
+
   /* clock — always UTC+8, whatever the visitor's zone */
   const clock = document.querySelector('[data-clock]')
   if (clock) {
@@ -18,6 +42,41 @@ export function initUI({ finePointer }) {
     render()
     const id = window.setInterval(render, 15000)
     cleanups.push(() => window.clearInterval(id))
+  }
+
+  /* pointer light that follows the cursor through the atmosphere layer */
+  const atmosphere = document.querySelector('.atmosphere')
+  if (finePointer && atmosphere) {
+    const glow = document.createElement('div')
+    glow.className = 'pointer-glow'
+    glow.setAttribute('aria-hidden', 'true')
+    atmosphere.appendChild(glow)
+
+    let gx = window.innerWidth / 2
+    let gy = window.innerHeight * 0.4
+    let tx = gx
+    let ty = gy
+    let raf = 0
+
+    const onGlowMove = (event) => {
+      tx = event.clientX
+      ty = event.clientY
+    }
+
+    const loop = () => {
+      gx += (tx - gx) * 0.075
+      gy += (ty - gy) * 0.075
+      glow.style.transform = `translate3d(${gx}px, ${gy}px, 0)`
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+
+    window.addEventListener('pointermove', onGlowMove, { passive: true })
+    cleanups.push(() => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('pointermove', onGlowMove)
+      glow.remove()
+    })
   }
 
   /* magnetic buttons: at most 8px of pull */

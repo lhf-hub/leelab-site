@@ -443,6 +443,57 @@
 
 /* ── work ────────────────────────────────────────────────────────────────── */
 
+/* A stock-ticker strip: the page's constant low-level motion. */
+.ticker-band {
+  position: relative;
+  z-index: 2;
+  overflow: clip;
+  border-block: 1px solid var(--line);
+  background: var(--bg-sink);
+}
+
+.ticker-band__track {
+  display: flex;
+  width: max-content;
+  animation: band-slide 34s linear infinite;
+  will-change: transform;
+}
+
+.ticker-band__group {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: clamp(16px, 2.2vw, 32px);
+  padding-right: clamp(16px, 2.2vw, 32px);
+  padding-block: 11px;
+}
+
+.ticker-band span {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.ticker-band i {
+  width: 5px;
+  height: 5px;
+  flex: none;
+  background: var(--signal);
+  transform: rotate(45deg);
+}
+
+@keyframes band-slide {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
 .work {
   padding-block: clamp(64px, 9vw, 130px) var(--section-y);
   border-top: 1px solid var(--line);

@@ -147,11 +147,11 @@ Everything else stays quiet: grain, one soft coral glow, hairlines, and a marque
 - The hero statement drifts apart line by line as the portrait leaves; the 3D camera dollies in and the stage fades.
 - About facts cascade in 55ms apart.
 
-**Loops.** Typewriter (26–46ms/char), salary count-up then live ticking, 3D auto-rotation with floating dust, marquee at 64px/s.
+**Loops.** Typewriter (26–46ms/char), salary count-up then live ticking, 3D auto-rotation with floating dust, marquee at 64px/s, and a stock-ticker band under the hero at 34s per loop.
 
-**Pointer.** Magnetic CTAs (≤8px), custom cursor (dot + lagging ring), and a coral label that replaces the ring over cards (`data-cursor="Visit"`).
+**Pointer.** Magnetic CTAs (≤8px), custom cursor (dot + lagging ring), a coral label that replaces the ring over cards (`data-cursor="Visit"`), a coral glow that trails the pointer through the atmosphere layer, and a 16-frame letter scramble on project names (`data-scramble`).
 
-**Velocity.** The footer marquee takes a hit from scroll velocity (`±900px/s`), so fast scrolling accelerates it and scrolling back reverses it.
+**Velocity.** Fast scrolling tilts the display type (`skewY` up to ±4.5°, settled back within 130ms) and accelerates the footer marquee (`±900px/s`), which reverses when scrolling back up.
 
 **Reduced motion.** No curtain, no splits, no sticky stack, no velocity, no cursor. Typewriter prints line one, money is fixed, the 3D renders one frame. Every element is visible without any animation.
 

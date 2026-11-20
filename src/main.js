@@ -12,6 +12,7 @@ import { initIntro } from './motion/intro.js'
 import { initBoot } from './motion/boot.js'
 import { initScroll } from './motion/scroll.js'
 import { initMarquee } from './motion/marquee.js'
+import { initScramble } from './motion/scramble.js'
 import { initCursor } from './motion/cursor.js'
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -71,6 +72,7 @@ const ui = initUI({ finePointer: fine })
 const ticker = initTicker({ reduced: !motion })
 const type = initTypewriter({ reduced: !motion, startWhen: motion ? boot.done : null })
 const marquee = initMarquee({ enabled: motion })
+const scramble = initScramble({ enabled: motion && fine })
 const scroll = initScroll({
   enabled: motion,
   onProgress: (progress) => {
@@ -83,16 +85,33 @@ const scroll = initScroll({
 })
 const cursor = initCursor({ enabled: motion && fine })
 
+/* Reduced motion never runs the scroll layer, so fade the stage out with a
+   plain scroll listener instead. */
+const heroSection = document.querySelector('.hero')
+let stageFade = null
+if (stage && heroSection && !motion) {
+  const fade = () => {
+    const height = heroSection.offsetHeight || 1
+    const progress = Math.min(1, Math.max(0, window.scrollY / height))
+    stage.style.opacity = String(Math.max(0, 1 - progress * 1.8))
+  }
+  fade()
+  window.addEventListener('scroll', fade, { passive: true })
+  stageFade = () => window.removeEventListener('scroll', fade)
+}
+
 const cleanups = [
   smooth.destroy,
   ui,
   ticker,
   type,
   marquee,
+  scramble,
   intro.destroy,
   scroll,
   cursor,
   boot.destroy,
+  () => stageFade?.(),
 ]
 
 function cleanup() {

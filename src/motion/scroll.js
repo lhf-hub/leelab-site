@@ -15,31 +15,6 @@ export function initScroll({ enabled, onProgress }) {
   const cleanups = []
   const push = (fn) => cleanups.push(fn)
 
-  /* ── header + progress ─────────────────────────────────────────────────── */
-
-  const header = document.querySelector('[data-header]')
-  const progressBar = document.querySelector('[data-progress]')
-
-  push(
-    ScrollTrigger.create({
-      start: 12,
-      end: 'max',
-      onToggle: (self) => header?.classList.toggle('is-scrolled', self.isActive),
-    }).kill,
-  )
-
-  if (progressBar) {
-    push(
-      ScrollTrigger.create({
-        start: 0,
-        end: 'max',
-        onUpdate: (self) => {
-          progressBar.style.transform = `scaleX(${self.progress})`
-        },
-      }).kill,
-    )
-  }
-
   /* ── split headlines ───────────────────────────────────────────────────── */
 
   initSplit('[data-split]').forEach((el) => {
@@ -61,6 +36,43 @@ export function initScroll({ enabled, onProgress }) {
       tween.kill()
     })
   })
+
+  /* ── velocity: everything tilts a little when the page moves fast ──────── */
+
+  const skewEls = gsap.utils.toArray('[data-skew]')
+  if (skewEls.length) {
+    const setters = skewEls.map((el) =>
+      gsap.quickTo(el, 'skewY', { duration: 0.5, ease: 'power3' }),
+    )
+    let lastMove = 0
+    let tilted = false
+
+    const trigger = ScrollTrigger.create({
+      start: 0,
+      end: 'max',
+      onUpdate: (self) => {
+        const tilt = gsap.utils.clamp(-4.5, 4.5, self.getVelocity() / 420)
+        setters.forEach((set) => set(tilt))
+        lastMove = performance.now()
+        tilted = true
+      },
+    })
+
+    // ScrollTrigger stops reporting the moment scrolling does, so settle back.
+    const settle = () => {
+      if (!tilted) return
+      if (performance.now() - lastMove > 130) {
+        tilted = false
+        setters.forEach((set) => set(0))
+      }
+    }
+    gsap.ticker.add(settle)
+
+    push(() => {
+      trigger.kill()
+      gsap.ticker.remove(settle)
+    })
+  }
 
   /* ── generic fades ─────────────────────────────────────────────────────── */
 
