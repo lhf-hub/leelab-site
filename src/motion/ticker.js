@@ -5,33 +5,52 @@ const formatter = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 2,
 })
 
+const easeOut = (t) => 1 - Math.pow(1 - t, 3)
+
 /*
- * The salary readout is the product's one live number. It ticks while it is on
- * screen, stops when the tab is hidden, and never pretends to be real pay.
+ * The salary readout is the product's one live number: it counts up the first
+ * time it is seen, then ticks in real time. It stops off-screen or hidden.
  */
 export function initTicker({ reduced }) {
   const el = document.querySelector('[data-ticker-amount]')
   if (!el) return () => {}
 
-  let value = demo.monthly
+  let value = 0
   const render = () => {
     el.textContent = `¥${formatter.format(value)}`
   }
 
   if (reduced) {
+    value = demo.monthly
     render()
     return () => {}
   }
 
   let raf = 0
   let last = 0
-  let onScreen = true
+  let onScreen = false
+  let counted = false
+  let countStart = 0
+
+  const COUNT_MS = 1500
 
   const step = (now) => {
-    if (!last) last = now
-    const dt = Math.min((now - last) / 1000, 0.2)
-    last = now
-    value += demo.perSecond * dt
+    if (!countStart) countStart = now
+
+    if (!counted) {
+      const progress = Math.min(1, (now - countStart) / COUNT_MS)
+      value = demo.monthly * easeOut(progress)
+      if (progress >= 1) {
+        counted = true
+        value = demo.monthly
+        last = now
+      }
+    } else {
+      const dt = Math.min((now - last) / 1000, 0.2)
+      last = now
+      value += demo.perSecond * dt
+    }
+
     render()
     raf = requestAnimationFrame(step)
   }
@@ -43,9 +62,10 @@ export function initTicker({ reduced }) {
   }
 
   const sync = () => {
-    if (onScreen && !document.hidden && !raf) {
+    const visible = onScreen && !document.hidden
+    if (visible && !raf) {
       raf = requestAnimationFrame(step)
-    } else if ((!onScreen || document.hidden) && raf) {
+    } else if (!visible && raf) {
       stop()
     }
   }
@@ -61,7 +81,8 @@ export function initTicker({ reduced }) {
 
   const onVisibility = () => sync()
   document.addEventListener('visibilitychange', onVisibility)
-  sync()
+
+  render()
 
   return () => {
     stop()

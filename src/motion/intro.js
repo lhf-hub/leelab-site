@@ -1,8 +1,8 @@
 import gsap from 'gsap'
 
 /*
- * The hero is the first thing anyone sees, so the intro is short and decisive:
- * the four display lines rise out of their masks, then the lower register fades.
+ * The hero intro starts when the boot curtain begins to lift, so the first
+ * thing anyone sees is type rising out of its masks.
  */
 export function initIntro({ enabled }) {
   const root = document.documentElement
@@ -12,37 +12,42 @@ export function initIntro({ enabled }) {
 
   if (!enabled) {
     root.classList.add('intro-done')
-    return () => {}
+    return { start() {}, destroy() {} }
   }
 
   let tl = null
+  let started = false
   let killed = false
+
   const start = () => {
-    if (killed || !lines.length) return
-    tl = gsap.timeline({
-      defaults: { ease: 'power3.out' },
-      onComplete: () => root.classList.add('intro-done'),
-    })
+    if (started || killed) return
+    started = true
 
-    tl.to(lines, { y: 0, duration: 1.05, stagger: 0.075 }, 0)
+    const run = () => {
+      if (killed) return
+      tl = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        onComplete: () => root.classList.add('intro-done'),
+      })
 
-    if (topline) {
-      tl.to(topline, { opacity: 1, duration: 0.7 }, 0.2)
+      tl.to(lines, { y: 0, duration: 1.05, stagger: 0.075 }, 0)
+      if (topline) tl.to(topline, { opacity: 1, duration: 0.7 }, 0.15)
+      if (foot) tl.to(foot, { opacity: 1, duration: 0.8 }, 0.45)
     }
-    if (foot) {
-      tl.to(foot, { opacity: 1, duration: 0.8 }, 0.55)
+
+    // Waiting for the display face avoids a reflow mid-animation.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(run).catch(run)
+    } else {
+      run()
     }
   }
 
-  // Waiting for the display face avoids a reflow mid-animation.
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(start).catch(start)
-  } else {
-    start()
-  }
-
-  return () => {
-    killed = true
-    tl?.kill()
+  return {
+    start,
+    destroy() {
+      killed = true
+      tl?.kill()
+    },
   }
 }

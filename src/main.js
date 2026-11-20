@@ -9,7 +9,9 @@ import { initUI } from './motion/ui.js'
 import { initTicker } from './motion/ticker.js'
 import { initTypewriter } from './motion/typewriter.js'
 import { initIntro } from './motion/intro.js'
+import { initBoot } from './motion/boot.js'
 import { initScroll } from './motion/scroll.js'
+import { initMarquee } from './motion/marquee.js'
 import { initCursor } from './motion/cursor.js'
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -26,7 +28,7 @@ const smooth = initSmoothScroll({ enabled: motion })
 
 /*
  * The 3D portrait is a progressive layer: the page is complete without it, so
- * it is fetched once the browser is idle and never blocks the hero type.
+ * it is fetched once the curtain is up and the browser is idle.
  */
 let portrait = null
 let portraitDestroyed = false
@@ -53,12 +55,22 @@ const idle =
     ? (fn) => window.requestIdleCallback(fn, { timeout: 1600 })
     : (fn) => window.setTimeout(fn, 900)
 
-idle(loadPortrait)
+/* ── opening sequence ────────────────────────────────────────────────────── */
+
+const boot = initBoot({ enabled: motion })
+const intro = initIntro({ enabled: motion })
+
+boot.done.then(() => {
+  intro.start()
+  idle(loadPortrait)
+})
+
+/* ── everything else ─────────────────────────────────────────────────────── */
 
 const ui = initUI({ finePointer: fine })
 const ticker = initTicker({ reduced: !motion })
-const type = initTypewriter({ reduced: !motion })
-const intro = initIntro({ enabled: motion })
+const type = initTypewriter({ reduced: !motion, startWhen: motion ? boot.done : null })
+const marquee = initMarquee({ enabled: motion })
 const scroll = initScroll({
   enabled: motion,
   onProgress: (progress) => {
@@ -76,9 +88,11 @@ const cleanups = [
   ui,
   ticker,
   type,
-  intro,
+  marquee,
+  intro.destroy,
   scroll,
   cursor,
+  boot.destroy,
 ]
 
 function cleanup() {

@@ -68,7 +68,6 @@ html {
 body {
   position: relative;
   min-height: 100svh;
-  overflow-x: clip;
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);

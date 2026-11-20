@@ -134,11 +134,26 @@ Everything else stays quiet: grain, one soft coral glow, hairlines, and a marque
 
 ## Motion
 
-- First paint: title lines rise out of overflow masks (1.05s, 75ms stagger) after fonts resolve; topline and foot fade in.
-- Scroll: header collapses to 62px with 88% dark glass; `[data-reveal]` fades up once; the portrait rotates and rises as the hero leaves; product windows drift ±3.2% against the page.
-- Pointer: magnetic pull ≤8px on CTAs, custom cursor (5px dot + lagging ring that grows over links), card pointer light.
-- Loops: typewriter (~26–46ms/char), salary ticker (rAF, paused off-screen), marquee, slow 3D auto-rotation, UTC+8 clock.
-- Reduced motion: no Lenis, no cursor, no marquee animation, no typewriter (first line printed), money static, 3D one frame or skipped.
+**Opening.** A 1.5s curtain: mono counter 000→100, coral progress hairline, then the sheet wipes up. The hero intro starts as the wipe begins, under the curtain.
+
+**First paint.** Hero lines rise out of overflow masks (1.05s, 75ms stagger) once the display face resolves; topline and foot fade in behind them.
+
+**Scroll.**
+
+- Header collapses to 62px with dark glass; a 2px coral progress line tracks the document.
+- Section headings are split per word and rise out of masks on entry (`data-split`), with `<em>` phrases masked as single units.
+- The work cards form a stack: card 1 pins under the header, card 2 slides over it while card 1 scales to 0.945 and fades to 45%.
+- Product windows wipe in with `clip-path` and then drift ±3.4% against the page.
+- The hero statement drifts apart line by line as the portrait leaves; the 3D camera dollies in and the stage fades.
+- About facts cascade in 55ms apart.
+
+**Loops.** Typewriter (26–46ms/char), salary count-up then live ticking, 3D auto-rotation with floating dust, marquee at 64px/s.
+
+**Pointer.** Magnetic CTAs (≤8px), custom cursor (dot + lagging ring), and a coral label that replaces the ring over cards (`data-cursor="Visit"`).
+
+**Velocity.** The footer marquee takes a hit from scroll velocity (`±900px/s`), so fast scrolling accelerates it and scrolling back reverses it.
+
+**Reduced motion.** No curtain, no splits, no sticky stack, no velocity, no cursor. Typewriter prints line one, money is fixed, the 3D renders one frame. Every element is visible without any animation.
 
 ## Do / Don't
 

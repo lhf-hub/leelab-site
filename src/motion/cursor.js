@@ -1,17 +1,21 @@
 /*
- * Two-part cursor: a signal dot that tracks exactly and a ring that lags.
- * Only on fine pointers; coarse pointers keep their native behaviour.
+ * Cursor: a signal dot that tracks exactly, a ring that lags, and a label that
+ * takes over on cards and links that ask for it with data-cursor="…".
  */
 export function initCursor({ enabled }) {
   if (!enabled) return () => {}
 
   const dot = document.createElement('div')
   const ring = document.createElement('div')
+  const label = document.createElement('div')
   dot.className = 'cursor-dot'
   ring.className = 'cursor-ring'
-  dot.setAttribute('aria-hidden', 'true')
-  ring.setAttribute('aria-hidden', 'true')
-  document.body.append(dot, ring)
+  label.className = 'cursor-label'
+
+  ;[dot, ring, label].forEach((node) => {
+    node.setAttribute('aria-hidden', 'true')
+    document.body.appendChild(node)
+  })
   document.documentElement.classList.add('has-custom-cursor')
 
   let x = window.innerWidth / 2
@@ -19,37 +23,44 @@ export function initCursor({ enabled }) {
   let rx = x
   let ry = y
   let raf = 0
-  let visible = false
+
+  const show = (visible) => {
+    dot.style.opacity = visible ? '1' : '0'
+    ring.style.opacity = visible ? '1' : '0'
+    if (!visible) label.classList.remove('is-on')
+  }
+  show(false)
 
   const onMove = (event) => {
     x = event.clientX
     y = event.clientY
-    if (!visible) {
-      visible = true
-      dot.style.opacity = '1'
-      ring.style.opacity = '1'
-    }
+    if (dot.style.opacity !== '1') show(true)
   }
 
   const onOver = (event) => {
-    const alive = event.target.closest('a, button, [data-card], [data-magnetic]')
-    ring.classList.toggle('is-active', Boolean(alive))
+    const target = event.target.closest('[data-cursor], a, button, [data-card]')
+    const withLabel = event.target.closest('[data-cursor]')
+
+    if (withLabel) {
+      label.textContent = withLabel.getAttribute('data-cursor')
+      label.classList.add('is-on')
+      ring.classList.add('is-quiet')
+      return
+    }
+
+    label.classList.remove('is-on')
+    ring.classList.remove('is-quiet')
+    ring.classList.toggle('is-active', Boolean(target))
   }
 
-  const onLeave = () => {
-    visible = false
-    dot.style.opacity = '0'
-    ring.style.opacity = '0'
-  }
-
-  dot.style.opacity = '0'
-  ring.style.opacity = '0'
+  const onLeave = () => show(false)
 
   const loop = () => {
     rx += (x - rx) * 0.16
     ry += (y - ry) * 0.16
     dot.style.transform = `translate3d(${x}px, ${y}px, 0)`
     ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`
+    label.style.transform = `translate3d(${rx}px, ${ry}px, 0)`
     raf = requestAnimationFrame(loop)
   }
   raf = requestAnimationFrame(loop)
@@ -66,5 +77,6 @@ export function initCursor({ enabled }) {
     document.documentElement.classList.remove('has-custom-cursor')
     dot.remove()
     ring.remove()
+    label.remove()
   }
 }

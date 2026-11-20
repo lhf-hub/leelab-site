@@ -2,6 +2,118 @@
    Motion states. Everything degrades to a still poster.
    ========================================================================== */
 
+/* ── boot curtain ────────────────────────────────────────────────────────── */
+
+html.is-booting,
+html.is-booting body {
+  overflow: hidden;
+}
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 24px;
+  padding: clamp(20px, 3.4vw, 46px);
+  background: var(--bg);
+  will-change: transform;
+}
+
+.boot__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.boot__brand {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+.boot__brand sup {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  vertical-align: super;
+  color: var(--signal);
+}
+
+.boot__mid {
+  align-self: end;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.boot__count {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 13vw, 11rem);
+  line-height: 0.78;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.boot__label {
+  padding-bottom: 0.9em;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.boot__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(244, 239, 231, 0.1);
+}
+
+.boot__bar span {
+  display: block;
+  height: 100%;
+  background: var(--signal);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+/* ── split headings ──────────────────────────────────────────────────────── */
+
+.sw {
+  display: inline-block;
+  overflow: hidden;
+  padding-block: 0.12em;
+  margin-block: -0.12em;
+  vertical-align: bottom;
+}
+
+.swi {
+  display: inline-block;
+  will-change: transform;
+}
+
+.motion-ok .is-split .swi {
+  transform: translate3d(0, 118%, 0);
+}
+
+html.motion-fallback .is-split .swi,
+html:not(.js) .swi {
+  transform: none !important;
+}
+
 /* JS is present and motion is allowed: the intro owns the first paint. */
 .motion-ok [data-reveal] {
   opacity: 0;
@@ -55,14 +167,19 @@ html:not(.js) .hero__title .line > span {
 /* ── custom cursor (fine pointers only) ──────────────────────────────────── */
 
 .cursor-dot,
-.cursor-ring {
+.cursor-ring,
+.cursor-label {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 90;
   pointer-events: none;
-  border-radius: 50%;
   will-change: transform;
+}
+
+.cursor-dot,
+.cursor-ring {
+  z-index: 90;
+  border-radius: 50%;
 }
 
 .cursor-dot {
@@ -94,6 +211,36 @@ html:not(.js) .hero__title .line > span {
   background: rgba(255, 90, 54, 0.08);
 }
 
+.cursor-ring.is-quiet {
+  visibility: hidden;
+}
+
+/* The label replaces the ring over cards and the mail link. */
+.cursor-label {
+  z-index: 91;
+  padding: 9px 15px;
+  border-radius: var(--r-pill);
+  background: var(--signal);
+  color: #170805;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  translate: -50% -50%;
+  opacity: 0;
+  scale: 0.6;
+  transition:
+    opacity 0.22s var(--ease),
+    scale 0.34s var(--ease-out);
+}
+
+.cursor-label.is-on {
+  opacity: 1;
+  scale: 1;
+}
+
 html.has-custom-cursor,
 html.has-custom-cursor * {
   cursor: none;
@@ -101,7 +248,8 @@ html.has-custom-cursor * {
 
 @media (pointer: coarse) {
   .cursor-dot,
-  .cursor-ring {
+  .cursor-ring,
+  .cursor-label {
     display: none !important;
   }
 }
@@ -143,7 +291,8 @@ html.has-custom-cursor * {
   }
 
   .cursor-dot,
-  .cursor-ring {
+  .cursor-ring,
+  .cursor-label {
     display: none !important;
   }
 

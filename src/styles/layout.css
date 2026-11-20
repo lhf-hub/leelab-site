@@ -39,6 +39,24 @@
   gap: 24px;
 }
 
+/* 1px read-progress line pinned to the bottom edge of the header. */
+.scroll-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  pointer-events: none;
+}
+
+.scroll-progress span {
+  display: block;
+  height: 100%;
+  background: var(--signal);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
 .brand {
   display: inline-flex;
   align-items: center;
@@ -219,6 +237,7 @@
   display: block;
   overflow: clip;
   padding-bottom: 0.02em;
+  will-change: transform;
 }
 
 .hero__title .line > span {
@@ -431,7 +450,8 @@
 }
 
 .work__list {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: clamp(18px, 2.4vw, 34px);
   margin-top: clamp(30px, 4vw, 56px);
 }

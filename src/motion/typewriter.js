@@ -4,7 +4,7 @@ import { typewriter } from '../data/site.js'
  * A single line typed and erased in place. Reduced motion gets the first line,
  * printed, no caret and no timers.
  */
-export function initTypewriter({ reduced }) {
+export function initTypewriter({ reduced, startWhen }) {
   const el = document.querySelector('[data-typewriter]')
   if (!el) return () => {}
 
@@ -50,7 +50,15 @@ export function initTypewriter({ reduced }) {
     schedule(16)
   }
 
-  schedule(420)
+  const begin = () => {
+    if (!killed) schedule(120)
+  }
+
+  if (startWhen && typeof startWhen.then === 'function') {
+    startWhen.then(begin, begin)
+  } else {
+    begin()
+  }
 
   return () => {
     killed = true

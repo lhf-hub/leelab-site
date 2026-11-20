@@ -25,6 +25,17 @@
     box-shadow 0.45s var(--ease);
 }
 
+/*
+ * The stack: every card except the last pins under the header, so the next one
+ * slides over it. Keep sticky off the last card or the note below would be
+ * covered while it is still pinned.
+ */
+.work-card:not(:last-of-type) {
+  position: sticky;
+  top: calc(var(--header-h) + 22px);
+  will-change: transform;
+}
+
 .work-card:focus-visible {
   outline: 2px solid var(--signal);
   outline-offset: 5px;
@@ -361,6 +372,12 @@
 /* ── responsive ──────────────────────────────────────────────────────────── */
 
 @media (max-width: 980px) {
+  /* A card taller than the viewport must not pin: the stack only works wide. */
+  .work-card:not(:last-of-type) {
+    position: relative;
+    top: auto;
+  }
+
   .work-card {
     grid-template-columns: minmax(0, 1fr);
     gap: 26px;

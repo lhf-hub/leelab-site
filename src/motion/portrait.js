@@ -69,6 +69,9 @@ export function initPortrait({ mount, reduced }) {
   halo.position.set(0, 0.15, -1.2)
   scene.add(halo)
 
+  const dust = makeDust()
+  scene.add(dust)
+
   let model = null
   let disposed = false
   let raf = 0
@@ -107,6 +110,47 @@ export function initPortrait({ mount, reduced }) {
     const sprite = new THREE.Sprite(material)
     sprite.scale.setScalar(4.6)
     return sprite
+  }
+
+  function makeDust() {
+    const count = 150
+    const positions = new Float32Array(count * 3)
+    const colors = new Float32Array(count * 3)
+    const coral = new THREE.Color(0xff5a36)
+    const green = new THREE.Color(0x5cf0a8)
+    const bone = new THREE.Color(0xf4efe7)
+
+    for (let i = 0; i < count; i += 1) {
+      const angle = Math.random() * Math.PI * 2
+      const radius = 1.7 + Math.random() * 2.4
+      positions[i * 3] = Math.cos(angle) * radius
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 4.4
+      positions[i * 3 + 2] = Math.sin(angle) * radius - 0.6
+
+      const pick = Math.random()
+      const color = pick > 0.82 ? coral : pick > 0.66 ? green : bone
+      colors[i * 3] = color.r
+      colors[i * 3 + 1] = color.g
+      colors[i * 3 + 2] = color.b
+    }
+
+    const geometry = new THREE.BufferGeometry()
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+
+    const material = new THREE.PointsMaterial({
+      size: 0.022,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.7,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true,
+    })
+
+    const points = new THREE.Points(geometry, material)
+    points.position.set(1.15, 0, 0)
+    return points
   }
 
   function standIn() {
@@ -213,6 +257,12 @@ export function initPortrait({ mount, reduced }) {
     pivot.rotation.y = state.auto * 0.1 + state.targetX * 0.38 + state.scroll * 0.7
     pivot.rotation.x = -state.targetY * 0.18 + idle
     pivot.position.y = (mount.clientHeight < 860 ? -0.4 : -0.22) - state.scroll * 0.5
+
+    // Dust drifts, the halo breathes, and the camera dollies in as the hero leaves.
+    dust.rotation.y += dt * 0.05
+    dust.rotation.x = Math.sin(elapsed * 0.3) * 0.05
+    halo.material.opacity = 0.72 + Math.sin(elapsed * 0.9) * 0.12
+    camera.position.z = CAMERA_Z - state.scroll * 1.7
 
     renderer.render(scene, camera)
   }
